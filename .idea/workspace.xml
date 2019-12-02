@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9b8c9886-468e-462c-bbdd-656e129c33cf" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="spring-beans.schema" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1UQlCYsU092MgPSxP8LmiRm53Yv" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9b8c9886-468e-462c-bbdd-656e129c33cf" name="Default Changelist" comment="" />
+      <created>1575296572525</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1575296572525</updated>
+      <workItem from="1575296578002" duration="519000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="555" y="182" width="802" height="683" key="#Project_Structure" timestamp="1575296588784">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="555" y="182" width="802" height="683" key="#Project_Structure/0.0.1920.1040@0.0.1920.1040" timestamp="1575296588784" />
+    <state x="738" y="281" width="426" height="490" key="FileChooserDialogImpl" timestamp="1575297091984">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="738" y="281" width="426" height="490" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1575297091984" />
+    <state x="639" y="347" key="com.intellij.ide.util.TipDialog" timestamp="1575296579133">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="639" y="347" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1575296579133" />
+    <state x="287" y="87" width="1337" height="872" key="new project wizard" timestamp="1575297096177">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="287" y="87" width="1337" height="872" key="new project wizard/0.0.1920.1040@0.0.1920.1040" timestamp="1575297096177" />
+  </component>
+</project>
