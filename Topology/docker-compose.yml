@@ -1,0 +1,27 @@
+version: '3'
+services:
+   db:
+    build: ./images/mysql
+    container_name: 'mysql'
+    command: --max_allowed_packet=32505856
+    environment:
+     - MYSQL_ROOT_PASSWORD=root
+    ports:
+     - "3306:3306"
+   phpmyadmin:
+    build: ./images/phpmyadmin
+    container_name: 'phpmyadmin'
+    environment:
+     - MYSQL_ROOT_PASSWORD=root
+    ports:
+     - "6060:80"
+    links:
+     - db:db
+   payara:
+    build: ./images/payara
+    container_name: 'payara'
+    ports:
+     - "8080:8080"
+     - "4848:4848"
+    depends_on:
+     - db
