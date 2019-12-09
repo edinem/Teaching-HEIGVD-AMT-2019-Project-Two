@@ -4,9 +4,16 @@ info:
   title: Calendar API
   description: An API to manage calendars
 host: localhost:8080
-basePath: /api
+basePath: /api/app
 schemes:
   - http
+securityDefinitions:
+  ApiKeyAuth:
+    type: apiKey
+    in: header
+    name: X-API-Key
+security:
+  - ApiKeyAuth: []
 paths:
   /calendars:
     post:
@@ -25,6 +32,8 @@ paths:
           description: created
           schema:
             type: object
+        '401':
+          $ref: '#/responses/UnauthorizedError'
     get:
       summary: get the list of all calendars avaible for the users
       operationId: getCalendars
@@ -37,6 +46,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Calendar'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
   /calendars/{calendarId}:
     get:
       summary: get a single calendar
@@ -46,8 +57,7 @@ paths:
       parameters:
         - name: calendarId
           in: path
-          schema:
-            type: integer
+          type: integer
           required: true
           description: Numeric ID of the calendar to get
       responses:
@@ -57,6 +67,47 @@ paths:
             type: object
         '403':
           description: not authorized
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+    put:
+      summary: edit a calendar
+      operationId: editCalendar
+      consumes:
+        - application/json
+      parameters:
+        - name: calendarId
+          in: path
+          type: integer
+          required: true
+          description: Numeric ID of the calendar to get
+        - name: calendar
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Calendar'
+      responses:
+        '200':
+          description: success
+        '403':
+          description: not authorized
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+    delete:
+      summary: delete a calendar
+      operationId: deleteCalendar
+      consumes:
+        - application/json
+      parameters:
+        - name: calendarId
+          in: path
+          type: integer
+          required: true
+          description: Numeric ID of the calendar to get
+      responses:
+        '200':
+          description: success
+        '401':
+          $ref: '#/responses/UnauthorizedError'
 
   /users:
     get:
@@ -71,7 +122,70 @@ paths:
             type: array
             items:
               $ref: '#/definitions/User'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
 
+  /access:
+    get:
+      summary: get all access for a calendar
+      operationId: getAccess
+      produces:
+        - application/json
+      parameters:
+        - name: calendarId
+          in: body
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Access'
+        '403':
+          description: forbidden
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+    post:
+      summary: create an access for a calendar
+      operationId: addAccess
+      produces:
+        - application/json
+      parameters:
+        - name: access
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Access'
+      responses:
+        '201':
+          description: created
+          schema:
+            $ref: '#/definitions/Access'
+        '403':
+          description: forbidden
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+    delete:
+      summary: delete an access
+      operationId: deleteAccess
+      parameters:
+        - name: access
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Access'
+      responses:
+        '201':
+          description: created
+          schema:
+            $ref: '#/definitions/Access'
+        '403':
+          description: forbidden
+        '401':
+          $ref: '#/responses/UnauthorizedError'
 
 definitions:
   Calendar:
@@ -83,4 +197,18 @@ definitions:
     type: object
     properties:
       email:
+        type: string
+  Access:
+    type: object
+    properties:
+      user:
+        type: string
+      calendar:
+        type: integer
+
+responses:
+  UnauthorizedError:
+    description: API key is missing or invalid
+    headers:
+      WWW_Authenticate:
         type: string
