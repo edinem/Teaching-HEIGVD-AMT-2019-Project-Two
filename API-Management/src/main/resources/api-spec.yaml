@@ -8,26 +8,26 @@ basePath: /api
 schemes:
   - http
 paths:
-  /fruits:
+  /user:
     post:
-      description: create a fruit
-      operationId: createFruit
+      description: Create a user
+      operationId: createUser
       consumes:
         - application/json
       parameters:
-        - name: fruit
+        - name: user
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Fruit'
+            $ref: '#/definitions/User'
       responses:
         '201':
           description: created
           schema:
             type: object
     get:
-      description: get the list of all fruits
-      operationId: getFruits
+      description: get the list of all users
+      operationId: getAllUsers
       produces:
         - application/json
       responses:
@@ -36,14 +36,67 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Fruit'
+              $ref: '#/definitions/User'
+  /user/{id}:
+    put:
+      description: Update a user
+      operationId: updateUser
+      consumes:
+        - application/json
+        parameters:
+          - name: user
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/User'
+        responses:
+          '201':
+            description: updated
+            schema:
+              type: object
+    delete:
+        description: Delete a user
+        operationId: updateUser
+        consumes:
+          - application/json
+          parameters:
+            - name: user
+              in: body
+              required: true
+              schema:
+                $ref: '#/definitions/User'
+          responses:
+            '201':
+              description: deleted
+              schema:
+                type: object
+    get:
+      description: Get a user
+      operationId: getUser
+      consumes:
+        - application/json
+        parameters:
+          - name: user
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/User'
+        responses:
+          '200':
+            description: success
+            schema:
+              items:
+                $ref: '#/definitions/User'
+
 definitions:
-  Fruit:
+  User:
     type: object
     properties:
-      kind:
+      email:
         type: string
-      colour:
+      firstName:
         type: string
-      size:
+      lastName:
+        type: string
+      password:
         type: string
