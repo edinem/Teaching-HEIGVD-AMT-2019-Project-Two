@@ -1,33 +1,33 @@
 swagger: '2.0'
 info:
   version: '0.1.0'
-  title: my simple api
-  description: An API to demonstrate Swagger
+  title: Calendar API
+  description: An API to manage calendars
 host: localhost:8080
 basePath: /api
 schemes:
   - http
 paths:
-  /fruits:
+  /calendars:
     post:
-      description: create a fruit
-      operationId: createFruit
+      summary: create a calendar
+      operationId: createCalendar
       consumes:
         - application/json
       parameters:
-        - name: fruit
+        - name: Calendar
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Fruit'
+            $ref: '#/definitions/Calendar'
       responses:
         '201':
           description: created
           schema:
             type: object
     get:
-      description: get the list of all fruits
-      operationId: getFruits
+      summary: get the list of all calendars avaible for the users
+      operationId: getCalendars
       produces:
         - application/json
       responses:
@@ -36,14 +36,51 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Fruit'
+              $ref: '#/definitions/Calendar'
+  /calendars/{calendarId}:
+    get:
+      summary: get a single calendar
+      operationId: getCalendarById
+      produces:
+        - application/json
+      parameters:
+        - name: calendarId
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the calendar to get
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+        '403':
+          description: not authorized
+
+  /users:
+    get:
+      summary: get all users in db
+      operationId: getUsers
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+
+
 definitions:
-  Fruit:
+  Calendar:
     type: object
     properties:
-      kind:
+      name:
         type: string
-      colour:
-        type: string
-      size:
+  User:
+    type: object
+    properties:
+      email:
         type: string
