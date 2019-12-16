@@ -37,56 +37,73 @@ paths:
             type: array
             items:
               $ref: '#/definitions/User'
-  /user/{id}:
     put:
-      description: Update a user
+      description: update a user
       operationId: updateUser
       consumes:
         - application/json
-        parameters:
-          - name: user
-            in: body
-            required: true
-            schema:
-              $ref: '#/definitions/User'
-        responses:
-          '201':
-            description: updated
-            schema:
-              type: object
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '201':
+          description: created
+          schema:
+            type: object
+
+  /user/{userId}:
     delete:
-        description: Delete a user
-        operationId: updateUser
-        consumes:
-          - application/json
-          parameters:
-            - name: user
-              in: body
-              required: true
-              schema:
-                $ref: '#/definitions/User'
-          responses:
-            '201':
-              description: deleted
-              schema:
-                type: object
+      description: Delete a user
+      operationId: deleteUser
+      consumes:
+        - application/json
+      parameters:
+        - name: userId
+          in: path
+          type: string
+          required: true
+      responses:
+        '201':
+          description: deleted
+          schema:
+            type: object
     get:
       description: Get a user
       operationId: getUser
       consumes:
         - application/json
-        parameters:
-          - name: user
-            in: body
-            required: true
-            schema:
+      parameters:
+        - name: userId
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: success
+          schema:
+            items:
               $ref: '#/definitions/User'
-        responses:
-          '200':
-            description: success
-            schema:
-              items:
-                $ref: '#/definitions/User'
+
+  /user/authentication/:
+    post:
+      description: authenticate a user
+      operationId: authenticateUser
+      consumes:
+        - application/json
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '201':
+          description: authenticated
+
+
 
 definitions:
   User:
