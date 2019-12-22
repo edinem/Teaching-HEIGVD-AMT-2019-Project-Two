@@ -73,7 +73,7 @@ paths:
     get:
       description: Get a user
       operationId: getUser
-      consumes:
+      produces:
         - application/json
       parameters:
         - name: userId
@@ -84,6 +84,7 @@ paths:
         '200':
           description: success
           schema:
+            type: object
             items:
               $ref: '#/definitions/User'
 

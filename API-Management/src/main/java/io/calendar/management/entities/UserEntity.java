@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
- * Created by Olivier Liechti on 26/07/17.
+ * Created by Edin Mujkanovic on 22/12/19.
  */
 @Entity
 @Table(name = "user")
