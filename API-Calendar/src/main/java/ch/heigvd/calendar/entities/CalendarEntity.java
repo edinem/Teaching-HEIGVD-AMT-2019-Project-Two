@@ -1,25 +1,27 @@
 package ch.heigvd.calendar.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
- * Created by Olivier Liechti on 26/07/17.
+ * Created by Daniel Oliveira Paiva on 16/12/19.
  */
 @Entity
+@Table(name = "calendar")
 public class CalendarEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
+    @Column(name="name")
     private String name;
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {

@@ -26,7 +26,10 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Calendar'
+            type: object
+            properties:
+              name:
+                type: string
       responses:
         '201':
           description: created
@@ -46,6 +49,24 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Calendar'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+    put:
+      summary: edit a calendar
+      operationId: editCalendar
+      consumes:
+        - application/json
+      parameters:
+        - name: calendar
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Calendar'
+      responses:
+        '200':
+          description: success
+        '403':
+          description: not authorized
         '401':
           $ref: '#/responses/UnauthorizedError'
   /calendars/{calendarId}:
@@ -69,29 +90,6 @@ paths:
           description: not authorized
         '401':
           $ref: '#/responses/UnauthorizedError'
-    put:
-      summary: edit a calendar
-      operationId: editCalendar
-      consumes:
-        - application/json
-      parameters:
-        - name: calendarId
-          in: path
-          type: integer
-          required: true
-          description: Numeric ID of the calendar to get
-        - name: calendar
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/Calendar'
-      responses:
-        '200':
-          description: success
-        '403':
-          description: not authorized
-        '401':
-          $ref: '#/responses/UnauthorizedError'
     delete:
       summary: delete a calendar
       operationId: deleteCalendar
@@ -106,6 +104,8 @@ paths:
       responses:
         '200':
           description: success
+          schema:
+            type: object
         '401':
           $ref: '#/responses/UnauthorizedError'
 
@@ -191,6 +191,8 @@ definitions:
   Calendar:
     type: object
     properties:
+      id:
+        type: integer
       name:
         type: string
   User:
