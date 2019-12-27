@@ -8,15 +8,17 @@ basePath: /api/app
 schemes:
   - http
 securityDefinitions:
-  ApiKeyAuth:
+  Bearer:
     type: apiKey
+    name: Authorization
     in: header
-    name: X-API-Key
 security:
-  - ApiKeyAuth: []
+  - Bearer: []
 paths:
   /calendars:
     post:
+      security:
+        - Bearer: []
       summary: create a calendar
       operationId: createCalendar
       consumes:
@@ -38,6 +40,8 @@ paths:
         '401':
           $ref: '#/responses/UnauthorizedError'
     get:
+      security:
+        - Bearer: []
       summary: get the list of all calendars avaible for the users
       operationId: getCalendars
       produces:
@@ -52,6 +56,8 @@ paths:
         '401':
           $ref: '#/responses/UnauthorizedError'
     put:
+      security:
+        - Bearer: []
       summary: edit a calendar
       operationId: editCalendar
       consumes:
@@ -87,7 +93,7 @@ paths:
           schema:
             type: object
         '403':
-          description: not authorized
+          description: You don't have the permission on the calendar
         '401':
           $ref: '#/responses/UnauthorizedError'
     delete:
@@ -145,13 +151,15 @@ paths:
             items:
               $ref: '#/definitions/Access'
         '403':
-          description: forbidden
+          description: You don't have access or enough rights on the calendar
+        '400':
+          description: Bad role specified
         '401':
           $ref: '#/responses/UnauthorizedError'
     post:
       summary: create an access for a calendar
       operationId: addAccess
-      produces:
+      consumes:
         - application/json
       parameters:
         - name: access
@@ -165,12 +173,14 @@ paths:
           schema:
             $ref: '#/definitions/Access'
         '403':
-          description: forbidden
+          description: You don't have access or enough rights on the calendar
         '401':
           $ref: '#/responses/UnauthorizedError'
     delete:
       summary: delete an access
       operationId: deleteAccess
+      consumes:
+        - application/json
       parameters:
         - name: access
           in: body
@@ -178,12 +188,25 @@ paths:
           schema:
             $ref: '#/definitions/Access'
       responses:
-        '201':
-          description: created
-          schema:
-            $ref: '#/definitions/Access'
+        '200':
+          description: deleted
         '403':
-          description: forbidden
+          description: You don't have access or enough rights on the calendar
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+  /access/roles:
+    get:
+      summary: get all roles for access
+      operationId: getRoles
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              type: string
         '401':
           $ref: '#/responses/UnauthorizedError'
 
@@ -207,6 +230,8 @@ definitions:
         type: string
       calendar:
         type: integer
+      role:
+        type: string
 
 responses:
   UnauthorizedError:

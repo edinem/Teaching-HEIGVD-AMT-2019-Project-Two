@@ -17,13 +17,13 @@ public class SwaggerDocumentationConfig {
 
     ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-            .title("Fruits API")
-            .description("An API to demonstrate Swagger and Spring Boot")
+            .title("Calendar API")
+            .description("An API to manage calendars")
             .license("")
             .licenseUrl("http://unlicense.org")
             .termsOfServiceUrl("")
             .version("0.1.0")
-            .contact(new Contact("","", ""))
+            .contact(new Contact("Daniel Oliveira Paiva","", "daniel.oliveirapaiva@heig-vd.ch"))
             .build();
     }
 
@@ -37,5 +37,4 @@ public class SwaggerDocumentationConfig {
                 .directModelSubstitute(org.joda.time.DateTime.class, java.util.Date.class)
                 .apiInfo(apiInfo());
     }
-
 }
