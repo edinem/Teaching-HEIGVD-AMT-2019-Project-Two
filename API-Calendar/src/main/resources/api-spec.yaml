@@ -131,7 +131,7 @@ paths:
         '401':
           $ref: '#/responses/UnauthorizedError'
 
-  /access:
+  /access/{calendarId}:
     get:
       summary: get all access for a calendar
       operationId: getAccess
@@ -139,10 +139,9 @@ paths:
         - application/json
       parameters:
         - name: calendarId
-          in: body
+          in: path
           required: true
-          schema:
-            type: integer
+          type: integer
       responses:
         '200':
           description: success
@@ -156,6 +155,7 @@ paths:
           description: Bad role specified
         '401':
           $ref: '#/responses/UnauthorizedError'
+  /access:
     post:
       summary: create an access for a calendar
       operationId: addAccess

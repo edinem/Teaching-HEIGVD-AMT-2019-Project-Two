@@ -7,17 +7,18 @@ import ch.heigvd.calendar.entities.AccessIdentity;
 import ch.heigvd.calendar.entities.UserEntity;
 import ch.heigvd.calendar.enums.Role;
 import ch.heigvd.calendar.repositories.AccessRepository;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -50,7 +51,7 @@ public class AccessApiController implements AccessApi {
     public ResponseEntity<Void> deleteAccess(@Valid Access access) {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         AccessEntity accessEntity = accessRepository.findById_Calendar_IdAndId_User_Email(access.getCalendar().longValue(), userEmail);
-        if(accessEntity == null || accessEntity.getRole().equals(Role.VIEWER)){
+        if(accessEntity == null || accessEntity.getRole().equals(Role.VIEWER.name())){
             return ResponseEntity.status(403).build();
         }
 
@@ -66,7 +67,7 @@ public class AccessApiController implements AccessApi {
     }
 
     @Override
-    public ResponseEntity<List<Access>> getAccess(@Valid Integer calendarId) {
+    public ResponseEntity<List<Access>> getAccess(@ApiParam(required=true) @PathVariable("calendarId") Integer calendarId) {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         boolean hasAccess = false;
         List<Access> accesses = new ArrayList<>();
@@ -88,7 +89,7 @@ public class AccessApiController implements AccessApi {
 
     @Override
     public ResponseEntity<List<String>> getRoles() {
-        List<Role> roles = Arrays.asList(Role.values());
+        Role[] roles = Role.values();
         List<String> rolesString = new ArrayList<>();
         for(Role role : roles) {
             rolesString.add(role.name());
