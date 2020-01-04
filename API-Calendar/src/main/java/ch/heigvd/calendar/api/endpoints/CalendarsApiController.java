@@ -3,12 +3,18 @@ package ch.heigvd.calendar.api.endpoints;
 import ch.heigvd.calendar.api.CalendarsApi;
 import ch.heigvd.calendar.api.model.Calendar;
 import ch.heigvd.calendar.api.model.InlineObject;
+import ch.heigvd.calendar.entities.AccessEntity;
+import ch.heigvd.calendar.entities.AccessIdentity;
 import ch.heigvd.calendar.entities.CalendarEntity;
+import ch.heigvd.calendar.entities.UserEntity;
+import ch.heigvd.calendar.enums.Role;
+import ch.heigvd.calendar.repositories.AccessRepository;
 import ch.heigvd.calendar.repositories.CalendarRepository;
+import ch.heigvd.calendar.repositories.UserRepository;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,14 +32,26 @@ import java.util.Optional;
 public class CalendarsApiController implements CalendarsApi {
 
     @Autowired
-    CalendarRepository calendarRepository;
+    private CalendarRepository calendarRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AccessRepository accessRepository;
 
     @Override
     public ResponseEntity<Object> createCalendar(@ApiParam(value = "", required = true) @Valid @RequestBody InlineObject calendar) {
         CalendarEntity newCalendarEntity = new CalendarEntity();
         newCalendarEntity.setName(calendar.getName());
-        calendarRepository.save(newCalendarEntity);
         Long id = newCalendarEntity.getId();
+        // associe le calendrier à l'utilisateur
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity user = userRepository.findById(userEmail).get();
+        calendarRepository.save(newCalendarEntity);
+        AccessEntity access = new AccessEntity(new AccessIdentity(newCalendarEntity, user), Role.OWNER.name());
+        accessRepository.save(access);
+        user.getCalendars().add(access);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{id}")
@@ -44,9 +62,11 @@ public class CalendarsApiController implements CalendarsApi {
 
     @Override
     public ResponseEntity<List<Calendar>> getCalendars() {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity user = userRepository.findById(userEmail).get();
         List<Calendar> calendars = new ArrayList<>();
-        for (CalendarEntity fruitEntity : calendarRepository.findAll()) {
-            calendars.add(toCalendar(fruitEntity));
+        for (AccessEntity access : user.getCalendars()) {
+            calendars.add(toCalendar(access.getId().getCalendar()));
         }
 
         return ResponseEntity.ok(calendars);
@@ -54,39 +74,72 @@ public class CalendarsApiController implements CalendarsApi {
 
     @Override
     public ResponseEntity<Void> editCalendar(@ApiParam(value = "", required = true) @Valid @RequestBody Calendar calendar) {
-       CalendarEntity editedCalendarEntity = toCalendarEntity(calendar);
-       calendarRepository.save(editedCalendarEntity);
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<CalendarEntity> dbCalendar = calendarRepository.findById(calendar.getId().longValue());
+        if(dbCalendar.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Optional<AccessEntity> accessEntity = accessRepository.findById(new AccessIdentity(toCalendarEntity(calendar), new UserEntity(userEmail)));
+        if (accessEntity.isEmpty() && accessEntity.get().getRole().equals(Role.VIEWER.name())) {
+            return ResponseEntity.status(403).build();
+        }
+
+        CalendarEntity calendarEntity = dbCalendar.get();
+        calendarEntity.setName(calendar.getName());
+        calendarRepository.save(calendarEntity);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{id}")
-                .buildAndExpand(editedCalendarEntity.getId()).toUri();
+                .buildAndExpand(calendarEntity.getId()).toUri();
 
         return ResponseEntity.created(location).build();
     }
 
     @Override
     public ResponseEntity<Object> getCalendarById(@ApiParam(value = "",required=true) @PathVariable("calendarId") Integer calendarId) {
-        Optional<CalendarEntity> calendarRetrivied = calendarRepository.findById(calendarId.longValue());
-        if(calendarRetrivied.isEmpty()) {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<CalendarEntity> calendarRetrievied = calendarRepository.findById(calendarId.longValue());
+        if(calendarRetrievied.isEmpty()) {
             return ResponseEntity.badRequest().body("ID not found");
-        } else {
-            return ResponseEntity.ok(calendarRetrivied);
         }
+
+        if (hasRight(userEmail, calendarRetrievied.get()) == null) {
+            return ResponseEntity.status(403).build();
+        }
+        return ResponseEntity.ok(toCalendar(calendarRetrievied.get()));
     }
 
     @Override
     public ResponseEntity<Object> deleteCalendar(@ApiParam(value = "",required=true) @PathVariable("calendarId") Integer calendarId) {
-        Optional<CalendarEntity> calendarRetrieved = calendarRepository.findById(calendarId.longValue());
-        if(calendarRetrieved.isEmpty()){
-            return ResponseEntity.badRequest().body("User doesn't exist");
-        }else{
-            calendarRepository.delete(calendarRetrieved.get());
-            Optional<CalendarEntity> userRetrievedAfterDelete = calendarRepository.findById(calendarId.longValue());
-            if(userRetrievedAfterDelete.isEmpty()){
-                return ResponseEntity.ok().body("User deleted");
-            }else{
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<CalendarEntity> calendarRetrievied = calendarRepository.findById(calendarId.longValue());
+        if(calendarRetrievied.isEmpty()) {
+            return ResponseEntity.badRequest().body("ID not found");
+        }
+
+        String role = hasRight(userEmail, calendarRetrievied.get());
+        if (role != null && !role.equals(Role.OWNER.name())) {
+            return ResponseEntity.status(403).build();
+        }
+
+        List<AccessEntity> accessEntities = accessRepository.findById_Calendar_Id(calendarId);
+        CalendarEntity calendarEntity = calendarRetrievied.get();
+        for(AccessEntity access : accessEntities) {
+            access.getId().getUser().getCalendars().remove(access);
+            calendarEntity.getUsers().remove(access);
+            accessRepository.delete(access);
+        }
+        calendarRepository.delete(calendarEntity);
+        return ResponseEntity.ok().body("Calendar deleted");
+    }
+
+    private String hasRight(String email, CalendarEntity calendar){
+        for(AccessEntity access: calendar.getUsers()){
+            if(access.getId().getUser().getEmail().equals(email)){
+                return access.getRole();
             }
         }
+        return null;
     }
 
     private CalendarEntity toCalendarEntity(Calendar calendar) {

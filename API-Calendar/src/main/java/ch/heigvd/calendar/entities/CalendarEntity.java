@@ -2,6 +2,8 @@ package ch.heigvd.calendar.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Daniel Oliveira Paiva on 16/12/19.
@@ -15,6 +17,12 @@ public class CalendarEntity implements Serializable {
     private long id;
     @Column(name="name")
     private String name;
+
+    @OneToMany(fetch = FetchType.LAZY,
+                cascade = { CascadeType.PERSIST, CascadeType.MERGE},
+                mappedBy = "id.calendar",
+                orphanRemoval = true)
+    private Set<AccessEntity> accesses = new HashSet<>();
 
     public long getId() {
         return id;
@@ -30,5 +38,13 @@ public class CalendarEntity implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<AccessEntity> getUsers() {
+        return accesses;
+    }
+
+    public void setUsers(Set<AccessEntity> users) {
+        this.accesses = users;
     }
 }
