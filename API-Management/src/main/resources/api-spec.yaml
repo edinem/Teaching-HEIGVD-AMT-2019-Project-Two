@@ -7,6 +7,12 @@ host: localhost:8080
 basePath: /api
 schemes:
   - http
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+
 paths:
   /user:
     post:
@@ -26,6 +32,8 @@ paths:
           schema:
             type: object
     get:
+      security:
+        - Bearer: []
       description: get the list of all users
       operationId: getAllUsers
       produces:
@@ -36,8 +44,10 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/User'
+              $ref: '#/definitions/UserWithoutPassword'
     put:
+      security:
+        - Bearer: []
       description: update a user
       operationId: updateUser
       consumes:
@@ -56,6 +66,8 @@ paths:
 
   /user/{userId}:
     delete:
+      security:
+        - Bearer: []
       description: Delete a user
       operationId: deleteUser
       consumes:
@@ -71,6 +83,8 @@ paths:
           schema:
             type: object
     get:
+      security:
+        - Bearer: []
       description: Get a user
       operationId: getUser
       produces:
@@ -123,4 +137,14 @@ definitions:
       lastName:
         type: string
       password:
+        type: string
+
+  UserWithoutPassword:
+    type: object
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
         type: string

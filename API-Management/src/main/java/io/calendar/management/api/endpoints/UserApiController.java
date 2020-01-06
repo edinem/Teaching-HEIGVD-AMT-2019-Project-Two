@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import io.calendar.management.api.UserApi;
 import io.calendar.management.api.model.User;
+import io.calendar.management.api.model.UserWithoutPassword;
+import io.calendar.management.api.util.JwtTokenUtil;
 import io.calendar.management.entities.UserEntity;
 import io.swagger.annotations.ApiParam;
 import net.minidev.json.JSONObject;
@@ -35,6 +37,8 @@ public class UserApiController implements UserApi {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    JwtTokenUtil jwtUtil;
 
     public ResponseEntity<Object> createUser(@ApiParam(value = "", required = true) @Valid @RequestBody User user) {
         UserEntity newUserEntity = toUserEntity(user);
@@ -61,10 +65,10 @@ public class UserApiController implements UserApi {
     }
 
 
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = new ArrayList<>();
+    public ResponseEntity<List<UserWithoutPassword>> getAllUsers() {
+        List<UserWithoutPassword> users = new ArrayList<>();
         for (UserEntity userEntity : userRepository.findAll()) {
-            users.add(toUser(userEntity));
+            users.add(toUserWithoutPassword(userEntity));
         }
 
         return ResponseEntity.ok(users);
@@ -75,7 +79,7 @@ public class UserApiController implements UserApi {
 
         Optional<UserEntity> userRetrieved = userRepository.findById(userId);
         if (userRetrieved.isPresent()) {
-            User user = toUser(userRetrieved.get());
+            UserWithoutPassword user = toUserWithoutPassword(userRetrieved.get());
             return ResponseEntity.ok(user);
         } else {
             return ResponseEntity.badRequest().body("ID not found");
@@ -100,17 +104,14 @@ public class UserApiController implements UserApi {
 
     @Override
     public ResponseEntity<String> authenticateUser(@ApiParam(value = "", required = true) @Valid @RequestBody User user) {
-        Algorithm algorithm = Algorithm.HMAC256("secret");
         Optional<UserEntity> userRetrieved = userRepository.findById(user.getEmail());
         String token = null;
         HttpCookie c = null;
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         JSONObject jsonResp = new JSONObject();
-        System.out.println("DEBUg" + userRetrieved);
         if((!userRetrieved.isEmpty()) && (userRetrieved.get().getPassword().equals(user.getPassword()))){
-            token = JWT.create()
-                    .withIssuer("auth0").withClaim("email", user.getEmail()).sign(algorithm);
+            token = jwtUtil.generateToken(user.getEmail());
              c = new HttpCookie("myJwt", token);
             headers.add("Set-Cookie","myJwt=" + token);
 
@@ -138,6 +139,15 @@ public class UserApiController implements UserApi {
         user.setFirstName(entity.getFirstName());
         user.setLastName(entity.getLastName());
         user.setPassword(entity.getPassword());
+
+        return user;
+    }
+
+    private UserWithoutPassword toUserWithoutPassword(UserEntity entity){
+        UserWithoutPassword user = new UserWithoutPassword();
+        user.setEmail(entity.getEmail());
+        user.setFirstName(entity.getFirstName());
+        user.setLastName(entity.getLastName());
 
         return user;
     }
