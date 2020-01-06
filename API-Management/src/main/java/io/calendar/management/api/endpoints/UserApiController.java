@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,14 +55,19 @@ public class UserApiController implements UserApi {
 
     public ResponseEntity<Object> updateUser(@ApiParam(value = "", required = true) @Valid @RequestBody User user) {
         UserEntity newUserEntity = toUserEntity(user);
-        userRepository.save(newUserEntity);
-        String email = newUserEntity.getEmail();
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(newUserEntity.getEmail().equals(userEmail)){
+            userRepository.save(newUserEntity);
+            String email = newUserEntity.getEmail();
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest().path("/{id}")
-                .buildAndExpand(newUserEntity.getEmail()).toUri();
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest().path("/{id}")
+                    .buildAndExpand(newUserEntity.getEmail()).toUri();
 
-        return ResponseEntity.created(location).build();
+            return ResponseEntity.created(location).build();
+        }else{
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
 
