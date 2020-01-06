@@ -53,7 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         // We don't need CSRF for this example
-        httpSecurity.authorizeRequests().antMatchers(HttpMethod.POST, "/user/", "/user/authentication/").permitAll();
+        httpSecurity.authorizeRequests().antMatchers(HttpMethod.POST, "/users/", "/users/authentication/").permitAll();
         httpSecurity.csrf().disable()
             // dont authenticate this particular request
             .authorizeRequests().antMatchers("/api-docs",

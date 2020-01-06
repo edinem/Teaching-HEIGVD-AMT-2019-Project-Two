@@ -14,7 +14,7 @@ securityDefinitions:
     in: header
 
 paths:
-  /user:
+  /users:
     post:
       description: Create a user
       operationId: createUser
@@ -25,7 +25,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/User'
+            $ref: '#/definitions/FullUser'
       responses:
         '201':
           description: created
@@ -44,7 +44,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/UserWithoutPassword'
+              $ref: '#/definitions/SimpleUser'
     put:
       security:
         - Bearer: []
@@ -57,14 +57,14 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/User'
+            $ref: '#/definitions/FullUser'
       responses:
         '201':
-          description: created
+          description: updated
           schema:
             type: object
 
-  /user/{userId}:
+  /users/{userId}:
     delete:
       security:
         - Bearer: []
@@ -100,9 +100,9 @@ paths:
           schema:
             type: object
             items:
-              $ref: '#/definitions/User'
+              $ref: '#/definitions/UserMinimum'
 
-  /user/authentication/:
+  /users/authentication/:
     post:
       description: authenticate a user
       operationId: authenticateUser
@@ -115,7 +115,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/User'
+            $ref: '#/definitions/LogInUser'
       responses:
         '200':
           description: >
@@ -127,6 +127,52 @@ paths:
 
 
 definitions:
+  UserMinimum:
+    type: object
+    required:
+      - email
+    properties:
+      email:
+        type: string
+
+  LogInUser:
+    allOf:
+      - $ref: '#/definitions/UserMinimum'
+      - type: object
+        required:
+          - password
+        properties:
+          password:
+            type: string
+
+  SimpleUser:
+    allOf:
+      - $ref: '#/definitions/UserMinimum'
+      - type: object
+        required:
+          - firstName
+          - lastName
+        properties:
+          firstName:
+            type: string
+          lastName:
+            type: string
+
+  FullUser:
+    allOf:
+      - $ref: '#/definitions/SimpleUser'
+      - $ref: '#/definitions/LogInUser'
+      - type: object
+        required:
+          - firstName
+          - lastName
+        properties:
+          firstName:
+            type: string
+          lastName:
+            type: string
+
+
   User:
     type: object
     properties:

@@ -1,8 +1,8 @@
 package io.calendar.management.api.endpoints;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import io.calendar.management.api.UserApi;
+import io.calendar.management.api.UsersApi;
+import io.calendar.management.api.model.LogInUser;
+import io.calendar.management.api.model.SimpleUser;
 import io.calendar.management.api.model.User;
 import io.calendar.management.api.model.UserWithoutPassword;
 import io.calendar.management.api.util.JwtTokenUtil;
@@ -17,11 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import io.calendar.management.repositories.UserRepository;
 
@@ -34,7 +31,7 @@ import java.util.Optional;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-07-26T19:36:34.802Z")
 
 @Controller
-public class UserApiController implements UserApi {
+public class UserApiController implements UsersApi {
 
     @Autowired
     UserRepository userRepository;
@@ -71,10 +68,10 @@ public class UserApiController implements UserApi {
     }
 
 
-    public ResponseEntity<List<UserWithoutPassword>> getAllUsers() {
-        List<UserWithoutPassword> users = new ArrayList<>();
+    public ResponseEntity<List<SimpleUser>> getAllUsers() {
+        List<SimpleUser> users = new ArrayList<>();
         for (UserEntity userEntity : userRepository.findAll()) {
-            users.add(toUserWithoutPassword(userEntity));
+            users.add(toSimpleUser(userEntity));
         }
 
         return ResponseEntity.ok(users);
@@ -109,7 +106,7 @@ public class UserApiController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<String> authenticateUser(@ApiParam(value = "", required = true) @Valid @RequestBody User user) {
+    public ResponseEntity<String> authenticateUser(@ApiParam(value = "", required = true) @Valid @RequestBody LogInUser user) {
         Optional<UserEntity> userRetrieved = userRepository.findById(user.getEmail());
         String token = null;
         HttpCookie c = null;
@@ -145,6 +142,15 @@ public class UserApiController implements UserApi {
         user.setFirstName(entity.getFirstName());
         user.setLastName(entity.getLastName());
         user.setPassword(entity.getPassword());
+
+        return user;
+    }
+
+    private SimpleUser toSimpleUser(UserEntity entity) {
+        SimpleUser user = new SimpleUser();
+        user.setEmail(entity.getEmail());
+        user.setFirstName(entity.getFirstName());
+        user.setLastName(entity.getLastName());
 
         return user;
     }
