@@ -13,7 +13,7 @@ import java.util.List;
 import cucumber.api.java8.En;
 
 public class LoginSteps extends AbstractSteps implements En {
-    private String loginUrl = "/api/user/authentication/";
+    private String loginUrl = "/api/management/user/authentication/";
 
     public LoginSteps() {
         Given("user send his informations", (DataTable userDt) -> {
