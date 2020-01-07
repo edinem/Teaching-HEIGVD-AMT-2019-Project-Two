@@ -34,6 +34,7 @@ public class LoginSteps extends AbstractSteps implements En {
                 case "FAILS":
                     assertThat(response.statusCode()).isBetween(400, 504);
                     break;
+
                 default:
                     fail("Unexpected error");
             }
