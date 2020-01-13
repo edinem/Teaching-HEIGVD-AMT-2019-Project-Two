@@ -25,7 +25,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/FullUser'
+            $ref: '#/definitions/User'
       responses:
         '201':
           description: created
@@ -57,7 +57,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/FullUser'
+            $ref: '#/definitions/User'
       responses:
         '201':
           description: updated
@@ -124,6 +124,47 @@ paths:
           schema:
             type: string
 
+  /users/password/{content}:
+    get:
+      description: Get an email to reset password
+      operationId: getResetLink
+      produces:
+        - application/json
+      parameters:
+        - name: content
+          description: email address of the account we want to reset the password
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Email sent.
+          schema:
+            type: string
+    post:
+      description: reset a user password
+      operationId: resetPassword
+      consumes:
+        - application/json
+      parameters:
+        - name: content
+          description: token to reset password
+          in: path
+          type: string
+          required: true
+        - name: user
+          description: user mail with new password
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/LogInUser'
+      responses:
+        '200':
+          description: >
+            Password reset successfully applied.
+          schema:
+            type: string
+
 
 
 definitions:
@@ -170,6 +211,10 @@ definitions:
           firstName:
             type: string
           lastName:
+            type: string
+          token:
+            type: string
+          ttl_token:
             type: string
 
 
