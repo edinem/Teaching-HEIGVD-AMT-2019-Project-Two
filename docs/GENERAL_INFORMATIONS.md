@@ -11,9 +11,9 @@ Afin de lancer l'infrastructure, il suffit de lancer le script `start.sh` situé
 - API `management` : l'API qui est en charge de la gestion des utilisateurs.
 - Serveur MockMock
 
-### 2.2 Données aléatoires
+### 2.2 Données aléatoires de l'API Calendar
 
-Nous avons générés trois dumps SQL de 10'000, 100'000 et 1'000'000 de données. Ces derniers se trouvent dans le dossier `SQL Dumps` se trouvant à la racine. Par défaut, le système va importer 1'000'000 de données. Si vous souhaitez modifier le dump, il vous faut le copier dans `/topology/test/images/mysql/data` ou `/topology/prod/images/mysql/data` selon l'environnement souhaité.
+Nous avons générés 1'000'000 de données, qui vont être insérées dans la base de données `API Calendar`. 
 
 ### 2.3 Identifiants
 
