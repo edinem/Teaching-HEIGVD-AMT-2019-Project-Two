@@ -76,6 +76,7 @@ public class TestSteps extends AbstractSteps implements En {
                     fail("Unexpected error");
             }
         });
+
         /** General **/
 
         When("non-authenticated user try to get user list", () -> executeGet(baseURL, ""));

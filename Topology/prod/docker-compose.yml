@@ -1,0 +1,85 @@
+version: '3'
+services:
+   mock:
+    build: ./images/mockmock
+    container_name: "mock"
+    ports:
+     - "25:25"
+     - "1111:8282"
+
+   proxy:
+    image: "traefik:v2.0.0-rc3"
+    container_name: "traefik"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.mysql.address=:3306"
+    ports:
+      - "80:80"
+      - "1234:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+   db:
+    build: ./images/mysql
+    container_name: 'mysql'
+    command: --max_allowed_packet=3250585600
+    environment:
+     - MYSQL_ROOT_PASSWORD=root
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.mysql.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.mysql.entrypoints=mysql"
+      - "traefik.tcp.routers.mysql.service=mysql"
+      - "traefik.tcp.services.mysql.loadbalancer.server.port=3306"
+    ports:
+     - "3306:3306"
+    healthcheck:
+     test: ["CMD-SHELL", "mysqladmin ping"]
+     interval: 10s
+     timeout: 2s
+     retries: 10
+
+   phpmyadmin:
+    build: ./images/phpmyadmin
+    container_name: 'phpmyadmin'
+    environment:
+     - MYSQL_ROOT_PASSWORD=root
+    ports:
+     - "6060:80"
+    links:
+     - db:db
+    depends_on:
+     - db
+
+   api-management:
+    build: ./images/api-management
+    container_name: 'api-management'
+    environment:
+        spring_profiles_active: docker
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.management.rule=Host(`localhost`) && PathPrefix(`/api/management`)"
+      - "traefik.http.services.management.loadbalancer.server.port=8080"
+    #ports:
+       #- "8080:8080"
+    depends_on:
+     - db
+
+   api-calendar:
+    depends_on:
+     - db
+    build: ./images/api-calendar
+    container_name: 'api-calendar'
+    environment:
+        spring_profiles_active: docker
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`localhost`) && PathPrefix(`/api/app`)"
+      - "traefik.http.services.app.loadbalancer.server.port=8080"
+    depends_on:
+     - db
+    #ports:
+     # - "8081:8080"
