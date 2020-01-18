@@ -2,12 +2,14 @@
 
 ### 2.1 Lancer l'infrastructure
 
-Afin de lancer l'infrastructure, il suffit de lancer le script `start_topology.sh` situé à la racine avec comme argument `prod` ou `test` : 
+Afin de lancer l'infrastructure, il suffit de lancer le script `start.sh` situé dans le dossier `Topology`. Ce dernier va lancer les containers suivants : 
 
-- `./start_topology.sh prod` lancera le serveur MySQL, phpMyAdmin et Payara en déployant le .war
-- `./start_topology.sh test` lancera le serveur MySQL, phpMyAdmin et Payara **sans** déployer le .war
-
-Après avoir lancé l'infrastructure, il faut attendre quelques temps avant de lancer des tests, utiliser l'application ou accéder à phpMyAdmin. Ce délais est dû au fait de l'importation d'un grand nombre de données.
+- Traefik
+- MySQL Server
+- phpMyadmin
+- API `Calendar` : l'API de notre business. 
+- API `management` : l'API qui est en charge de la gestion des utilisateurs.
+- Serveur MockMock
 
 ### 2.2 Données aléatoires
 
@@ -39,7 +41,9 @@ Ci-dessous, les liens utiles lorsque l'infrastructure est montée :
 
 - phpMyAdmin : http://localhost:6060
 
-- WS-Calendar : http://localhost:8080/ws-calendar
+- API-Management : http://localhost:8080/ws-calendar
+
+- API-Calendar : 
 
   
 

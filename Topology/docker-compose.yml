@@ -36,6 +36,12 @@ services:
       - "traefik.tcp.services.mysql.loadbalancer.server.port=3306"
     ports:
      - "3306:3306"
+    healthcheck:
+     - test: ["CMD-SHELL", "mysqladmin ping"]
+     - interval: 10s
+     - timeout: 2s
+     - retries: 10
+
    phpmyadmin:
     build: ./images/phpmyadmin
     container_name: 'phpmyadmin'
@@ -45,6 +51,8 @@ services:
      - "6060:80"
     links:
      - db:db
+    depends_on:
+     - db
 
    api-management:
     build: ./images/api-management
@@ -71,5 +79,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.app.rule=Host(`localhost`) && PathPrefix(`/api/app`)"
       - "traefik.http.services.app.loadbalancer.server.port=8080"
+    depends_on:
+     - db
     #ports:
      # - "8081:8080"
