@@ -50,11 +50,14 @@ public class UserApiController implements UsersApi {
      * @return Retourne une réponse HTTP.
      */
     public ResponseEntity<Object> createUser(@ApiParam(value = "", required = true) @Valid @RequestBody User user) {
-        //On verifie que le mail est pas déjà pris
+
+        //On verifie si le mail est pas déjà pris
         Optional<UserEntity> userRetrieved = userRepository.findById(user.getEmail());
         if(!userRetrieved.isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+
+        //Création du nouvel utilisateur
         UserEntity newUserEntity = toUserEntity(user);
         newUserEntity.setPassword( Hashing.sha256()
                 .hashString(user.getPassword(), StandardCharsets.UTF_8)
@@ -78,6 +81,7 @@ public class UserApiController implements UsersApi {
     public ResponseEntity<Object> updateUser(@ApiParam(value = "", required = true) @Valid @RequestBody User user) {
         UserEntity newUserEntity = toUserEntity(user);
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        //Verification que l'utilisateur souhaitant être modifié est bien l'utilisateur connecté
         if(newUserEntity.getEmail().equals(userEmail)){
             userRepository.save(newUserEntity);
             String email = newUserEntity.getEmail();
@@ -132,6 +136,8 @@ public class UserApiController implements UsersApi {
     public ResponseEntity<Object> deleteUser(@ApiParam(value = "",required=true) @PathVariable("userId") String userId) {
         Optional<UserEntity> userRetrieved = userRepository.findById(userId);
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        //Verification que l'utilisateur souhaitant être supprimé est bien l'utilisateur connecté
         if(!userEmail.equals(userId)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("NOT AUTHORIZED");
         }
@@ -166,6 +172,7 @@ public class UserApiController implements UsersApi {
                 .hashString(user.getPassword(), StandardCharsets.UTF_8)
                 .toString();
 
+        //On vérifie que les identifiants sont valides.
         if((!userRetrieved.isEmpty()) && (passedPassword.equals(userRetrieved.get().getPassword()))){
             token = jwtUtil.generateToken(user.getEmail());
              c = new HttpCookie("myJwt", token);
