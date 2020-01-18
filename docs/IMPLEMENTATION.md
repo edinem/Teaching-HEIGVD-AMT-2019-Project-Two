@@ -83,7 +83,7 @@ Page<UserEntity> users = userRepository.findAll(pageable);
 Il nous suffit ensuite de travailler avec la liste d'objets récupérée de la base de données comme on le souhaite.
 #### 4.5 Réinitialisation du mot de passe par e-mails
 
-Nous avons implémenté l'option de réinitialisation par e-mails. En effet, un utilisateur peut demander une réinitilisation en envoyant une requête GET sur le lien `/users/password/edin.mujkanovic@heig-vd.ch` (dans cet exemple nous demandons une réinitialisation du compte ayant l'adresse mail edin.mujkanovic@heig-vd.ch). 
+Nous avons implémenté l'option de réinitialisation par e-mails. En effet, un utilisateur peut demander une réinitialisation en envoyant une requête GET sur le lien `/users/password/edin.mujkanovic@heig-vd.ch` (dans cet exemple nous demandons une réinitialisation du compte ayant l'adresse mail edin.mujkanovic@heig-vd.ch). 
 
 Après avoir effectué la requête, l'email de réinitialisation est envoyé. Pour faciliter l'usage de l'application pour la correction, nous avons ajouté un serveur MockMock qui receptionne tous les mails envoyés. Afin de voir le mail de réinitilisation demandé pour le compte edin.mujkanovic@heig-vd.ch, nous allons donc sur : http://localhost:1111/  et nous voyons donc le mail demandé : 
 
@@ -93,4 +93,6 @@ Avec son contenu :
 
 ![Content](./images/content.png)
 
-En utilisant le token, reçu par mail, 
+En utilisant le token, reçu par mail, nous pouvons effectuer une requête POST sur le lien `/users/password/VBLvv70Y75at` avec l'email et le nouveau mot de passe afin de réinitialiser le mot de passe: 
+
+![Content](./images/swagger_mail_token.png)

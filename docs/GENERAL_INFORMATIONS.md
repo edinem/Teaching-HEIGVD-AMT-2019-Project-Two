@@ -22,10 +22,11 @@ Les identifiants sont :
 
 #### 2.3.2 Utilisateurs de l'API-Calendar
 
-Par défaut, les dumps SQL vont insérer 20 utilisateurs (username1, username2, username3,..., username20) dans la base de données avec le même mot de passe (#Welcome123), les identfiants sont donc par exemple: 
+Par défaut, les dumps SQL vont insérer 20 utilisateurs (username1, username2, username3,..., username20), les identfiants sont donc par exemple: 
 
-- Utilisateur : username1
-- Mot de passe : #Welcome123
+- Utilisateur : username1@email.com
+
+Vous pouvez utiliser un token contenant un autre email de votre choix. Ce dernier sera automatiquement inséré dans la base de données en tant qu'utilisateurs connectés.
 
 #### 2.3.3 Utilisateurs de l'API-Management
 
