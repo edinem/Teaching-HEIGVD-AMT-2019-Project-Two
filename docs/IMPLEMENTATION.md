@@ -54,11 +54,30 @@ Dans cette classe, nous obtenons la valeur de l'entête HTTP `Authorization`. No
 
 Cette classe permet de renvoyer une erreur 401 lors d'un mauvais token JWT. 
 
-
-
 #### 4.3 Table intermédiaire
 
+Dans l'implémentation de notre API Calendar, il est favorable de travailler avec la table intermédiaire pour récupérer les calendriers associés à l'utilisateur et les accès à ceux-ci.
 
+Pour se faire, nous avons créé une entité `AccessEntity` qui représente notre table intermédiaire `user_has_calendar`. La table ayant une clé primaire composite, nous avons dû créé une classe `AccessIdentity` afin de pouvoir l'utiliser comme Id dans notre entité.
+
+```java
+@EmbeddedId
+private AccessIdentity id;
+```
+
+Il est alors possible de créer un repository `AccessRepository ` en étendant la classe `PagingAndSortingRepository<AccessEntity, AccessIdentity>` et de mettre la classe `AccessIdentity` comme type de clé primaire du repository.
 
 #### 4.4 Pagination
 
+Nous avons défini la pagination pour toutes les listes de données retournées par notre API. Pour ce faire, les repository étendent la classe ``PagingAndSortingRepository<>`.  
+
+Nous passons les paramètres de la pagination dans l'URL `?offset=x&limit=y`. Les paramètres ne sont pas obligatoires. En effet, ils ont une valeur par défaut de 0 pour l'offset et de 20 pour la limite. 
+
+Dans les Controllers, nous avons implémenter la pagination comme ceci : 
+
+```java
+Pageable pageable = PageRequest.of(offset, limit);
+Page<UserEntity> users = userRepository.findAll(pageable);
+```
+
+Il nous suffit ensuite de travailler avec la liste d'objets récupérée de la base de données comme on le souhaite.
