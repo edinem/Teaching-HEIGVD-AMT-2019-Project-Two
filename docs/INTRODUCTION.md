@@ -12,11 +12,11 @@ Les différentes APIs ont des endpoints nécessitant une authentification. Cette
 
 Pour une meilleure compréhension de notre projet, ci-dessous se trouve les schémas des bases de données : 
 
-**Base de données de l'API Calendar: **
+**Base de données de l'API Calendar:**
 
 ![](images/schema_calendar_db.png)
 
-**Base de données de l'API Management : **
+**Base de données de l'API Management :**
 
  
 
