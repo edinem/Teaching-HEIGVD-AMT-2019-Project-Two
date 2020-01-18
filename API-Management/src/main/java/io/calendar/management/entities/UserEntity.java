@@ -24,6 +24,10 @@ public class UserEntity implements Serializable {
     private String firstName;
     @Column(name="password")
     private String password;
+    //@Column(name="token");
+    private String token;
+    //@Column(name="ttl_token");
+    private String ttl_token;
 
     public String getEmail() {
         return email;
@@ -55,5 +59,21 @@ public class UserEntity implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getTtlToken() {
+        return ttl_token;
+    }
+
+    public void setTtlToken(String ttlToken) {
+        this.ttl_token = ttlToken;
     }
 }

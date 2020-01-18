@@ -14,7 +14,7 @@ securityDefinitions:
     in: header
 
 paths:
-  /user:
+  /users:
     post:
       description: Create a user
       operationId: createUser
@@ -44,7 +44,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/UserWithoutPassword'
+              $ref: '#/definitions/SimpleUser'
     put:
       security:
         - Bearer: []
@@ -60,11 +60,11 @@ paths:
             $ref: '#/definitions/User'
       responses:
         '201':
-          description: created
+          description: updated
           schema:
             type: object
 
-  /user/{userId}:
+  /users/{userId}:
     delete:
       security:
         - Bearer: []
@@ -100,9 +100,9 @@ paths:
           schema:
             type: object
             items:
-              $ref: '#/definitions/User'
+              $ref: '#/definitions/UserMinimum'
 
-  /user/authentication/:
+  /users/authentication/:
     post:
       description: authenticate a user
       operationId: authenticateUser
@@ -115,7 +115,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/User'
+            $ref: '#/definitions/LogInUser'
       responses:
         '200':
           description: >
@@ -124,9 +124,100 @@ paths:
           schema:
             type: string
 
+  /users/password/{content}:
+    get:
+      description: Get an email to reset password
+      operationId: getResetLink
+      produces:
+        - application/json
+      parameters:
+        - name: content
+          description: email address of the account we want to reset the password
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Email sent.
+          schema:
+            type: string
+    post:
+      description: reset a user password
+      operationId: resetPassword
+      consumes:
+        - application/json
+      parameters:
+        - name: content
+          description: token to reset password
+          in: path
+          type: string
+          required: true
+        - name: user
+          description: user mail with new password
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/LogInUser'
+      responses:
+        '200':
+          description: >
+            Password reset successfully applied.
+          schema:
+            type: string
+
 
 
 definitions:
+  UserMinimum:
+    type: object
+    required:
+      - email
+    properties:
+      email:
+        type: string
+
+  LogInUser:
+    allOf:
+      - $ref: '#/definitions/UserMinimum'
+      - type: object
+        required:
+          - password
+        properties:
+          password:
+            type: string
+
+  SimpleUser:
+    allOf:
+      - $ref: '#/definitions/UserMinimum'
+      - type: object
+        required:
+          - firstName
+          - lastName
+        properties:
+          firstName:
+            type: string
+          lastName:
+            type: string
+
+  FullUser:
+    allOf:
+      - $ref: '#/definitions/SimpleUser'
+      - $ref: '#/definitions/LogInUser'
+      - type: object
+        required:
+          - firstName
+          - lastName
+        properties:
+          firstName:
+            type: string
+          lastName:
+            type: string
+          token:
+            type: string
+          ttl_token:
+            type: string
+
+
   User:
     type: object
     properties:

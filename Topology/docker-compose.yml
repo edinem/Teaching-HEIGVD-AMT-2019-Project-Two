@@ -1,5 +1,12 @@
 version: '3'
 services:
+   mock:
+    build: ./images/mockmock
+    container_name: "mock"
+    ports:
+     - "25:25"
+     - "1111:8282"
+
    proxy:
     image: "traefik:v2.0.0-rc3"
     container_name: "traefik"

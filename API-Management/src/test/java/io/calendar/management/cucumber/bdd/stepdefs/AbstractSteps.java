@@ -1,13 +1,15 @@
 package io.calendar.management.cucumber.bdd.stepdefs;
 
+
 import io.calendar.management.cucumber.bdd.CucumberTestContext;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.server.LocalServerPort;
+
+import java.util.Map;
 
 /**
  * Class that abstract test context management and REST API invocation.
@@ -22,6 +24,7 @@ public class AbstractSteps {
     @LocalServerPort
     private int port;
 
+
     protected String baseUrl() {
         return "http://localhost:" + port;
     }
@@ -31,21 +34,26 @@ public class AbstractSteps {
     }
 
     protected void executePost(String apiPath) {
-        executePost(apiPath, null, null);
+        executePost(apiPath, null, null, null);
+    }
+
+    protected void executePost(String apiPath, String token) {
+        executePost(apiPath, null, null, token);
     }
 
     protected void executePost(String apiPath, Map<String, String> pathParams) {
-        executePost(apiPath, pathParams, null);
+        executePost(apiPath, pathParams, null, null);
     }
 
-    protected void executePost(String apiPath, Map<String, String> pathParams, Map<String, String> queryParamas) {
+    protected void executePost(String apiPath, Map<String, String> pathParams, Map<String, String> queryParams, String token) {
         final RequestSpecification request = CONTEXT.getRequest();
         final Object payload = CONTEXT.getPayload();
         final String url = baseUrl() + apiPath;
 
         setPayload(request, payload);
         setQueryParams(pathParams, request);
-        setPathParams(queryParamas, request);
+        setPathParams(queryParams, request);
+        setTokenHeader(token, request);
 
         Response response = request
                 .log()
@@ -72,14 +80,18 @@ public class AbstractSteps {
     }
 
     protected void executeDelete(String apiPath) {
-        executeDelete(apiPath, null, null);
+        executeDelete(apiPath, null, null, null);
+    }
+
+    protected void executeDelete(String apiPath, String token) {
+        executeDelete(apiPath, null, null, token);
     }
 
     protected void executeDelete(String apiPath, Map<String, String> pathParams) {
-        executeDelete(apiPath, pathParams, null);
+        executeDelete(apiPath, pathParams, null, null);
     }
 
-    protected void executeDelete(String apiPath, Map<String, String> pathParams, Map<String, String> queryParams) {
+    protected void executeDelete(String apiPath, Map<String, String> pathParams, Map<String, String> queryParams, String token) {
         final RequestSpecification request = CONTEXT.getRequest();
         final Object payload = CONTEXT.getPayload();
         final String url = baseUrl() + apiPath;
@@ -87,6 +99,8 @@ public class AbstractSteps {
         setPayload(request, payload);
         setQueryParams(pathParams, request);
         setPathParams(queryParams, request);
+        setTokenHeader(token, request);
+
 
         Response response = request.accept(ContentType.JSON)
                 .log()
@@ -98,14 +112,18 @@ public class AbstractSteps {
     }
 
     protected void executePut(String apiPath) {
-        executePut(apiPath, null, null);
+        executePut(apiPath, null, null, null);
     }
 
     protected void executePut(String apiPath, Map<String, String> pathParams) {
-        executePut(apiPath, pathParams, null);
+        executePut(apiPath, pathParams, null, null);
     }
 
-    protected void executePut(String apiPath, Map<String, String> pathParams, Map<String, String> queryParams) {
+    protected void executePut(String apiPath, String token) {
+        executePut(apiPath, null, null, token);
+    }
+
+    protected void executePut(String apiPath, Map<String, String> pathParams, Map<String, String> queryParams, String token) {
         final RequestSpecification request = CONTEXT.getRequest();
         final Object payload = CONTEXT.getPayload();
         final String url = baseUrl() + apiPath;
@@ -113,6 +131,7 @@ public class AbstractSteps {
         setPayload(request, payload);
         setQueryParams(pathParams, request);
         setPathParams(queryParams, request);
+        setTokenHeader(token, request);
 
         Response response = request.accept(ContentType.JSON)
                 .log()
@@ -150,19 +169,24 @@ public class AbstractSteps {
     }
 
     protected void executeGet(String apiPath) {
-        executeGet(apiPath, null, null);
+        executeGet(apiPath, null, null, null);
+    }
+
+    protected void executeGet(String apiPath, String token) {
+        executeGet(apiPath, null, null, token);
     }
 
     protected void executeGet(String apiPath, Map<String, String> pathParams) {
-        executeGet(apiPath, pathParams, null);
+        executeGet(apiPath, pathParams, null, null);
     }
 
-    protected void executeGet(String apiPath, Map<String, String> pathParams, Map<String, String> queryParams) {
+    protected void executeGet(String apiPath, Map<String, String> pathParams, Map<String, String> queryParams, String token) {
         final RequestSpecification request = CONTEXT.getRequest();
         final String url = baseUrl() + apiPath;
 
         setQueryParams(pathParams, request);
         setPathParams(queryParams, request);
+        setTokenHeader(token, request);
 
         Response response = request.accept(ContentType.JSON)
                 .log()
@@ -182,6 +206,12 @@ public class AbstractSteps {
     private void setPathParams(Map<String, String> queryParamas, RequestSpecification request) {
         if (null != queryParamas) {
             request.queryParams(queryParamas);
+        }
+    }
+
+    private void setTokenHeader(String tokenHeader, RequestSpecification request){
+        if(null != tokenHeader){
+            request.header("Authorization", "Bearer " + tokenHeader);
         }
     }
 
