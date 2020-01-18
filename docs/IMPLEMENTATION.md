@@ -16,7 +16,7 @@ Pour finir, le payload du Token JWT est le suivant:
 - exp: Date d'expiration
 - iat : Date d'émission
 
-![Token_Body](.\images\Token_Body.PNG)
+![Token_Body](./images/Token_Body.PNG)
 
 
 
@@ -36,7 +36,7 @@ auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder()
 
 La méthode `configure` de la classe permet de définir les règles autorisation pour l'API. Pour l'API de Management, nous avons ouvert les URL permettant l'authentification et l'inscription d'un utilisateur ainsi que la documentation de Swagger. Dans l'API Calendar, nous avons uniquement ouvert la documentation Swagger. De plus, nous ajoutons un filtre `JwtRequestFilter` qui s'applique avant le check de l'authentification, appliqué de base par la classe étendue. Si aucun utilisateur n'est authentifié après ce filtre, la classe `JwtAuthenticationEntryPoint` va être appelée et renvoyer une erreur 401.
 
-![WebSecurityConfig](.\images\WebSecurityConfig.PNG)
+![WebSecurityConfig](./images/WebSecurityConfig.PNG)
 
 ##### 4.2.2 JwtUserDetailsService
 
