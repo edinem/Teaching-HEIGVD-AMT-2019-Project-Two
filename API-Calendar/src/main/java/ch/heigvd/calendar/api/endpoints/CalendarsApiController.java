@@ -13,6 +13,9 @@ import ch.heigvd.calendar.repositories.CalendarRepository;
 import ch.heigvd.calendar.repositories.UserRepository;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -21,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,12 +65,12 @@ public class CalendarsApiController implements CalendarsApi {
         return ResponseEntity.created(location).build();
     }
 
-    @Override
-    public ResponseEntity<List<Calendar>> getCalendars() {
+    public ResponseEntity<List<Calendar>> getCalendars(@Min(0) @Valid Integer offset, @Min(1) @Max(50) @Valid Integer limit) {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserEntity user = userRepository.findById(userEmail).get();
+        Pageable pageable = PageRequest.of(offset, limit);
+        Page<AccessEntity> accesses = accessRepository.findById_User_Email(userEmail, pageable);
         List<Calendar> calendars = new ArrayList<>();
-        for (AccessEntity access : user.getCalendars()) {
+        for (AccessEntity access : accesses.getContent()) {
             calendars.add(toCalendar(access.getId().getCalendar()));
         }
 
