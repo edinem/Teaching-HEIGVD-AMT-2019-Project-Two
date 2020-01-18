@@ -83,7 +83,12 @@ Page<UserEntity> users = userRepository.findAll(pageable);
 Il nous suffit ensuite de travailler avec la liste d'objets récupérée de la base de données comme on le souhaite.
 #### 4.5 Réinitialisation du mot de passe par e-mails
 
-Nous avons implémenté l'option de réinitialisation par e-mails. En effet, un utilisateur peut demander une réinitialisation en envoyant une requête GET sur le lien `/users/password/edin.mujkanovic@heig-vd.ch` (dans cet exemple nous demandons une réinitialisation du compte ayant l'adresse mail edin.mujkanovic@heig-vd.ch). 
+Nous avons implémenté l'option de réinitialisation par e-mails. Nous avons donc ajouté un lien sur notre API gérant les utilisateurs : `/users/password/{mail}`. Il faut faire une requête GET sur ce lien en spécifiant le mail du compte dont on veut réinitialiser le mot de passe. Lorsque la requête est effectuée, le serveur va générer un token, qu'il insérera dans l'entrée de l'utilisateur dans la base de données et va envoyer un mail sur l'email spécifié avec le token. Le token a un temps de vie de 1 jour. 
+L'utilisateur ayant reçu le mail, il suffit d'effectuer une requête POST sur le lien `/users/password/{token}` en spécifiant le token reçu dans l'URL ainsi que un objet dans le body avec son email, et son nouveau mot de passe. Le serveur va ensuite vérifier la validité du token, de son temps de vie, et si tout est en ordre, va changer le mot de passe.
+
+**Exemple:**
+
+Un utilisateur peut demander une réinitialisation en envoyant une requête GET sur le lien `/users/password/edin.mujkanovic@heig-vd.ch` (dans cet exemple nous demandons une réinitialisation du compte ayant l'adresse mail edin.mujkanovic@heig-vd.ch). 
 
 Après avoir effectué la requête, l'email de réinitialisation est envoyé. Pour faciliter l'usage de l'application pour la correction, nous avons ajouté un serveur MockMock qui receptionne tous les mails envoyés. Afin de voir le mail de réinitilisation demandé pour le compte edin.mujkanovic@heig-vd.ch, nous allons donc sur : http://localhost:1111/  et nous voyons donc le mail demandé : 
 
@@ -96,3 +101,5 @@ Avec son contenu :
 En utilisant le token, reçu par mail, nous pouvons effectuer une requête POST sur le lien `/users/password/VBLvv70Y75at` avec l'email et le nouveau mot de passe afin de réinitialiser le mot de passe: 
 
 ![Content](./images/swagger_mail_token.png)
+
+Le mot de passe est réinitialisé ! 

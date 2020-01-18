@@ -2,32 +2,22 @@
 
 ### 1.1 Description du projet
 
-Dans ce projet du module AMT, il nous était demandé de choisir un **business domain** de notre choix et d'en faire un modèle simple avec un petit nombre d'entités de business. Le projet avait pour but de nous apprendre à utiliser les différents méchanismes et notions de **Java EE**.
+Dans ce projet du module AMT, il nous était demandé de reprendre le  **business domain** du projet 1 et de le transformer en deux projets SpringBoot implémentant deux APIs REST bien distinctes et générées sur la base d'une documentation Swagger. De plus, une phase de test utilisant l'outil Cucumber a été demandée et donc implémentée dans chacune des APIs. 
 
-Nous avons décidé de créer un site web permettant aux utilisateurs de s'inscrire, afin de pouvoir créer des calendriers. Quand ces derniers sont créés, le propriétaire des calendriers peut partager ces derniers aux autres utilisateurs du site avec des droits différents. Ces derniers sont : 
+Les différentes APIs ont des endpoints nécessitant une authentification. Cette dernière est gérée par l'API Management et est basée sur des tokens JWT comme demandé dans l'énoncé.
 
-- **Owner** : Le propriétaire du calendrier ayant tous les droits.
 
-- **Viewer** : Permet de voir le calendrier mais de ne pas l'éditer.
-- **Editor** : Permet de voir le calendrier et de le modifier.
 
-Malheureusement, nous avons décidé, après avoir discuté avec le professeur et l'assitant, que la création d'événement ne sera pas implémentée.
+### 1.2 Schéma relationnel de la base de données
 
-En plus de la gestion des calendriers, nous avons donné la possibilité à l'utilisateur de :
+Pour une meilleure compréhension de notre projet, ci-dessous se trouve les schémas des bases de données : 
 
-- Modifier ses informations
-- Réinitialiser son mot de passe
+**Base de données de l'API Calendar: **
 
-### 1.2 Mockup
+![](images/schema_calendar_db.png)
 
-Ci-dessous, le mockup que nous avons designé durant la première semaine du projet:
-
-![](images/mockup.png)
-
-### 1.3 Schéma relationnel de la base de données
-
-Pour une meilleure compréhension de notre projet, ci-dessous se trouve le schéma relationnel de la base de données : 
-
-![](images/schema_relationnel.png)
+**Base de données de l'API Management : **
 
  
+
+![](images/schema_management_db.png)

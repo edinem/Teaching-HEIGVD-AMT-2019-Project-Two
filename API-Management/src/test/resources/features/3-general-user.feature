@@ -8,7 +8,7 @@ Feature: General
     When authenticated user try to get user list
     Then the authenticated action 'IS SUCCESSFUL'
 
-  Scenario: It should not be possible to get a user account information
+  Scenario: It should be possible to get a user account information
     Given the user id to get
     | userId |
     | edin.mujkanovic@heig-vd.ch |
