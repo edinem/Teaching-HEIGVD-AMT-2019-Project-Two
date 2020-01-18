@@ -33,7 +33,9 @@ import java.util.concurrent.TimeUnit;
 
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-07-26T19:36:34.802Z")
-
+/**
+ * Controller of the User API
+ */
 @Controller
 public class UserApiController implements UsersApi {
 
@@ -42,6 +44,11 @@ public class UserApiController implements UsersApi {
     @Autowired
     JwtTokenUtil jwtUtil;
 
+    /**
+     * Méthode permettant de créer un utilisateur
+     * @param user Objet User qui contient les informations de l'utilisateur que l'on souhaite créé.
+     * @return Retourne une réponse HTTP.
+     */
     public ResponseEntity<Object> createUser(@ApiParam(value = "", required = true) @Valid @RequestBody User user) {
         //On verifie que le mail est pas déjà pris
         Optional<UserEntity> userRetrieved = userRepository.findById(user.getEmail());
@@ -63,6 +70,11 @@ public class UserApiController implements UsersApi {
         return ResponseEntity.created(location).build();
     }
 
+    /**
+     * Permet de modifier son compte utilisateur. Nécessite l'authentification.
+     * @param user Objet user contenant toutes les informations de l'utilisateur que l'on souhaite mettre à jour.
+     * @return Retourne une réponse HTTP.
+     */
     public ResponseEntity<Object> updateUser(@ApiParam(value = "", required = true) @Valid @RequestBody User user) {
         UserEntity newUserEntity = toUserEntity(user);
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -80,7 +92,10 @@ public class UserApiController implements UsersApi {
         }
     }
 
-
+    /**
+     * Méthode permettant de récuperer la liste des utilisateurs. Nécessite l'authentification.
+     * @return Retourne une réponse HTTP.
+     */
     public ResponseEntity<List<SimpleUser>> getAllUsers() {
         List<SimpleUser> users = new ArrayList<>();
         for (UserEntity userEntity : userRepository.findAll()) {
@@ -90,6 +105,12 @@ public class UserApiController implements UsersApi {
         return ResponseEntity.ok(users);
     }
 
+    /**
+     * Méthode permettant de récuperer les informations (firstName, lastName, email) d'un utilisateur spécifique.
+     * Nécessite l'authentification.
+     * @param userId l'email de l'utilisateur dont on souhaite avoir les informations.
+     * @return Retourne une réponse HTTP.
+     */
     @Override
     public ResponseEntity<Object> getUser(@ApiParam(value = "",required=true) @PathVariable("userId") String userId) {
 
@@ -98,16 +119,21 @@ public class UserApiController implements UsersApi {
             UserWithoutPassword user = toUserWithoutPassword(userRetrieved.get());
             return ResponseEntity.ok(user);
         } else {
-            return ResponseEntity.badRequest().body("ID not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID not found");
         }
     }
 
+    /**
+     * Méthode permettant de supprimer son utilisateur. Nécessite l'authentification.
+     * @param userId Email de l'utilisateur que l'on souhaite supprimer.
+     * @return Retourne une réponse HTTP.
+     */
     @Override
     public ResponseEntity<Object> deleteUser(@ApiParam(value = "",required=true) @PathVariable("userId") String userId) {
         Optional<UserEntity> userRetrieved = userRepository.findById(userId);
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         if(!userEmail.equals(userId)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User doesn't exist");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("NOT AUTHORIZED");
         }
         if (userRetrieved.isPresent()) {
             userRepository.delete(userRetrieved.get());
@@ -115,13 +141,19 @@ public class UserApiController implements UsersApi {
             if (userRetrievedAfterDelete.isPresent()) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
             } else {
-                return ResponseEntity.ok().body("User deleted");
+                return ResponseEntity.status(HttpStatus.OK).body("User deleted");
             }
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User doesn't exist");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User doesn't exist");
         }
     }
 
+
+    /**
+     * Méthode permettant de s'authentifier auprès de l'API.
+     * @param user Objet LogInUser contenant les identifiants
+     * @return Retourne une réponse HTTP avec token.
+     */
     @Override
     public ResponseEntity<String> authenticateUser(@ApiParam(value = "", required = true) @Valid @RequestBody LogInUser user) {
         Optional<UserEntity> userRetrieved = userRepository.findById(user.getEmail());
@@ -138,42 +170,56 @@ public class UserApiController implements UsersApi {
             token = jwtUtil.generateToken(user.getEmail());
              c = new HttpCookie("myJwt", token);
             headers.add("Set-Cookie","myJwt=" + token);
-
             jsonResp.put("token", token);
-            return ResponseEntity.status(200).header(HttpHeaders.SET_COOKIE, c.toString()).body(jsonResp.toJSONString());
+
+            return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.SET_COOKIE, c.toString()).body(jsonResp.toJSONString());
         }else{
             jsonResp.put("result", "No user found or credentials are wrong");
-            return ResponseEntity.status(400).headers(headers).body(jsonResp.toJSONString());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(headers).body(jsonResp.toJSONString());
         }
     }
 
+
+    /**
+     * Méthode permettant de recevoir un mail avec un lien afin de réinitialiser son mot de passe.
+     * @param content Email du compte dont on veut réinitialiser le mot de passe.
+     * @return Retourne une réponse HTTP.
+     */
     @Override
     public ResponseEntity<String> getResetLink(String content) {
         Optional<UserEntity> userRetrieved = userRepository.findById(content);
         String token = null;
         String linkToSend = null;
 
-        if((!userRetrieved.isEmpty())){
-            byte[] array = new byte[7];
-            new Random().nextBytes(array);
-            token = new String(array, Charset.forName("UTF-8"));
-            token = Base64.getEncoder().encodeToString(token.getBytes());
-            token = token.replace("/","");
-            token = token.replace("+", "");
+        try{
+            if((!userRetrieved.isEmpty())){
+                byte[] array = new byte[7];
+                new Random().nextBytes(array);
+                token = new String(array, Charset.forName("UTF-8"));
+                token = Base64.getEncoder().encodeToString(token.getBytes());
+                token = token.replace("/","");
+                token = token.replace("+", "");
 
-            userRetrieved.get().setToken(token);
-            userRetrieved.get().setTtlToken(new Date(System.currentTimeMillis()+1440*60*1000).toString());
-            userRepository.save(userRetrieved.get());
-            linkToSend = "http://localhost/api/management/users/password/" + token;
-            String contentMail = "Please send a POST request to this address with your username and your new password : " + linkToSend;
-            SmtpUtil.sendEmail(userRetrieved.get().getEmail(), contentMail);
-
+                userRetrieved.get().setToken(token);
+                userRetrieved.get().setTtlToken(new Date(System.currentTimeMillis()+1440*60*1000).toString());
+                userRepository.save(userRetrieved.get());
+                linkToSend = "http://localhost/api/management/users/password/" + token;
+                String contentMail = "Please send a POST request to this address with your username and your new password : " + linkToSend;
+                SmtpUtil.sendEmail(userRetrieved.get().getEmail(), contentMail);
+            }
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
         }
-
 
         return ResponseEntity.status(200).body("Email successfully sent");
     }
 
+    /**
+     * Méthode permettant de réinitialiser le mot de passe d'un compte
+     * @param content Token permettant la réinitialisation du mot de passe
+     * @param user Objet LogInUser contenant l'adresse mail et le nouveau mot de passe.
+     * @return Retourne une réponse HTTP.
+     */
     @Override
     public ResponseEntity<String> resetPassword(String content, @Valid LogInUser user) {
 
@@ -202,6 +248,11 @@ public class UserApiController implements UsersApi {
         return ResponseEntity.status(500).body("Internal server errorr");
     }
 
+    /**
+     * Méthode permettant de passer d'un objet User à UserEntity.
+     * @param user Objet user contenant les informations
+     * @return Le nouvel objet UserEntity.
+     */
     private UserEntity toUserEntity(User user) {
         UserEntity entity = new UserEntity();
         entity.setEmail(user.getEmail());
@@ -212,6 +263,11 @@ public class UserApiController implements UsersApi {
         return entity;
     }
 
+    /**
+     * Méthode permettant de passer d'un objet UserEntity à User
+     * @param entity Objet UserEntity contenant les informations.
+     * @return Le nouvel objet User
+     */
     private User toUser(UserEntity entity) {
         User user = new User();
         user.setEmail(entity.getEmail());
@@ -222,6 +278,11 @@ public class UserApiController implements UsersApi {
         return user;
     }
 
+    /**
+     * Méthode permettant de passer d'un objet UserEntity à SimpleUser
+     * @param entity Objet UserEntity contenant les informations.
+     * @return Le nouvel objet SimpleUser.
+     */
     private SimpleUser toSimpleUser(UserEntity entity) {
         SimpleUser user = new SimpleUser();
         user.setEmail(entity.getEmail());
@@ -231,6 +292,11 @@ public class UserApiController implements UsersApi {
         return user;
     }
 
+    /**
+     * Méthode permettant de passer d'un objet UserEntity à UserWithoutPassword
+     * @param entity Objet UserEntity contenant les informations.
+     * @return Le nouvel objet UserWithoutPassword.
+     */
     private UserWithoutPassword toUserWithoutPassword(UserEntity entity){
         UserWithoutPassword user = new UserWithoutPassword();
         user.setEmail(entity.getEmail());
