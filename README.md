@@ -1,4 +1,4 @@
-# AMT - Projet 1 - WS-Calendar
+# AMT - Projet 2 - WS-Calendar
 
 ## Auteurs : Edin Mujkanovic et Daniel Oliveira
 
@@ -8,13 +8,15 @@
 
 2. [Informations générales](docs/GENERAL_INFORMATIONS.md) 
 
-3. [Implémentation](docs/IMPLEMENTATION.md) 
+3. [Design de l'API](docs/DESIGN_API.md) 
 
-4. [Tests](docs/TESTS.md) 
+4. [Implémentation](docs/IMPLEMENTATION.md) 
 
-5. [JMeter](docs/JMETER.md) 
+5. [Tests](docs/TESTS.md) 
 
-6. [Bugs Connus](docs/BUGS_CONNUS.md) 
+6. [JMeter](docs/JMETER.md) 
+
+   
 
    
 

@@ -1,6 +1,6 @@
-## 4. Tests
+## 5. Tests
 
-### 4.1 Introductions aux tests
+### 5.1 Introductions aux tests
 
 Dans ce chapitre, nous allons parcourir et expliquer les différents types de tests effectués durant le projet.
 
@@ -16,7 +16,7 @@ Dans ce chapitre, nous allons parcourir et expliquer les différents types de te
 
 ​		Mockito est utilisé dans notre projet afin de tester le bon fonctionnement de nos vues.
 
-### 4.2 Prérequis
+### 5.2 Prérequis
 
 Afin de pouvoir exécuter les tests, il vous faudra installer **maven** sur votre machine ainsi que mettre en place un environnement nécessaire au bon fonctionnement d'Arquillian. Pour ce faire : 
 

@@ -1,14 +1,14 @@
-## 5. JMeter
+## 6. JMeter
 
-### 5.1 Introduction
+### 6.1 Introduction
 
 Dans ce chapitre, nous allons tester les performances de deux vues, **showCalendars.xhtml** et **showLazyCalendars.xhtml**. Ces derniers affichent tous les calendriers présents dans la base de données, de façon paginée mais de deux manières différentes. showCalendars.xhtml va charger tous les calendriers en mémoire en une fois alors que le showLazyCalendars.xhtml va effectuer une requête à chaque sélection de page afin d'y charger les calendriers correspondant.
 
-### 5.2 Résultats 
+### 6.2 Résultats 
 
 Les tests ci-dessous sont effectués avec 10 threads (10 utilisateurs) qui effectueront chacun 10 requêtes.
 
-#### 5.2.1 Résultats 10'000 données
+#### 6.2.1 Résultats 10'000 données
 
 LazyCalendars : 
 
