@@ -268,7 +268,7 @@ definitions:
 
 responses:
   UnauthorizedError:
-    description: API key is missing or invalid
+    description: API key is invalid or missing
     headers:
       WWW_Authenticate:
         type: string
