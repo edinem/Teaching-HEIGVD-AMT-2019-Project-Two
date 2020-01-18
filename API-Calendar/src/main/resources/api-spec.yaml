@@ -8,17 +8,44 @@ basePath: /api/app
 schemes:
   - http
 securityDefinitions:
-  Bearer:
+  API:
     type: apiKey
     name: Authorization
     in: header
 security:
-  - Bearer: []
+  - API: []
+parameters:
+  offsetParam:
+    in: query
+    name: offset
+    required: false
+    type: integer
+    minimum: 0
+    default: 0
+    description: The number of items to skip before starting to collect the result set.
+  limitParam:
+    in: query
+    name: limit
+    required: false
+    type: integer
+    minimum: 1
+    maximum: 50
+    default: 20
+    description: The numbers of items to return.
 paths:
+  /:
+    get:
+      security:
+        - API: []
+      responses:
+        '200':
+          description: Ok
+        '401':
+          $ref: '#/responses/UnauthorizedError'
   /calendars:
     post:
       security:
-        - Bearer: []
+        - API: []
       summary: create a calendar
       operationId: createCalendar
       consumes:
@@ -41,9 +68,12 @@ paths:
           $ref: '#/responses/UnauthorizedError'
     get:
       security:
-        - Bearer: []
+        - API: []
       summary: get the list of all calendars avaible for the users
       operationId: getCalendars
+      parameters:
+         - $ref: '#/parameters/offsetParam'
+         - $ref: '#/parameters/limitParam'
       produces:
         - application/json
       responses:
@@ -57,7 +87,7 @@ paths:
           $ref: '#/responses/UnauthorizedError'
     put:
       security:
-        - Bearer: []
+        - API: []
       summary: edit a calendar
       operationId: editCalendar
       consumes:
@@ -119,6 +149,9 @@ paths:
     get:
       summary: get all users in db
       operationId: getUsers
+      parameters:
+        - $ref: '#/parameters/offsetParam'
+        - $ref: '#/parameters/limitParam'
       produces:
         - application/json
       responses:
